@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GuwenDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.guwen_name as guwenName
+        ,a.guwen_phone as guwenPhone
+        ,a.guwen_id_number as guwenIdNumber
+        ,a.guwen_photo as guwenPhoto
+        ,a.guwen_shanchang as guwenShanchang
+        ,a.sex_types as sexTypes
+        ,a.guwen_email as guwenEmail
+        ,a.guwen_content as guwenContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GuwenView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM guwen  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.guwenName != '' and params.guwenName != null and params.guwenName != 'null' ">
+                and a.guwen_name like CONCAT('%',#{params.guwenName},'%')
+            </if>
+            <if test=" params.guwenPhone != '' and params.guwenPhone != null and params.guwenPhone != 'null' ">
+                and a.guwen_phone like CONCAT('%',#{params.guwenPhone},'%')
+            </if>
+            <if test=" params.guwenIdNumber != '' and params.guwenIdNumber != null and params.guwenIdNumber != 'null' ">
+                and a.guwen_id_number like CONCAT('%',#{params.guwenIdNumber},'%')
+            </if>
+            <if test=" params.guwenShanchang != '' and params.guwenShanchang != null and params.guwenShanchang != 'null' ">
+                and a.guwen_shanchang like CONCAT('%',#{params.guwenShanchang},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test=" params.guwenEmail != '' and params.guwenEmail != null and params.guwenEmail != 'null' ">
+                and a.guwen_email like CONCAT('%',#{params.guwenEmail},'%')
+            </if>
+            <if test=" params.guwenContent != '' and params.guwenContent != null and params.guwenContent != 'null' ">
+                and a.guwen_content like CONCAT('%',#{params.guwenContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

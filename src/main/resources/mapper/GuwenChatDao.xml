@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GuwenChatDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.guwen_id as guwenId
+        ,a.guwen_chat_issue_text as guwenChatIssueText
+        ,a.issue_time as issueTime
+        ,a.guwen_chat_reply_text as guwenChatReplyText
+        ,a.reply_time as replyTime
+        ,a.zhuangtai_types as zhuangtaiTypes
+        ,a.guwen_chat_types as guwenChatTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GuwenChatView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,guwen.guwen_name as guwenName
+        ,guwen.guwen_phone as guwenPhone
+        ,guwen.guwen_id_number as guwenIdNumber
+        ,guwen.guwen_photo as guwenPhoto
+        ,guwen.guwen_shanchang as guwenShanchang
+        ,guwen.guwen_email as guwenEmail
+        ,guwen.guwen_content as guwenContent
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+
+        FROM guwen_chat  a
+        left JOIN guwen guwen ON a.guwen_id = guwen.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.guwenId != null and params.guwenId != ''">
+                and (
+                    a.guwen_id = #{params.guwenId}
+                )
+            </if>
+            <if test=" params.guwenChatIssueText != '' and params.guwenChatIssueText != null and params.guwenChatIssueText != 'null' ">
+                and a.guwen_chat_issue_text like CONCAT('%',#{params.guwenChatIssueText},'%')
+            </if>
+            <if test=" params.issueTimeStart != '' and params.issueTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.issue_time) >= UNIX_TIMESTAMP(#{params.issueTimeStart}) ]]>
+            </if>
+            <if test=" params.issueTimeEnd != '' and params.issueTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.issue_time) <= UNIX_TIMESTAMP(#{params.issueTimeEnd}) ]]>
+            </if>
+            <if test=" params.guwenChatReplyText != '' and params.guwenChatReplyText != null and params.guwenChatReplyText != 'null' ">
+                and a.guwen_chat_reply_text like CONCAT('%',#{params.guwenChatReplyText},'%')
+            </if>
+            <if test=" params.replyTimeStart != '' and params.replyTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.reply_time) >= UNIX_TIMESTAMP(#{params.replyTimeStart}) ]]>
+            </if>
+            <if test=" params.replyTimeEnd != '' and params.replyTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.reply_time) <= UNIX_TIMESTAMP(#{params.replyTimeEnd}) ]]>
+            </if>
+            <if test="params.zhuangtaiTypes != null and params.zhuangtaiTypes != ''">
+                and a.zhuangtai_types = #{params.zhuangtaiTypes}
+            </if>
+            <if test="params.guwenChatTypes != null and params.guwenChatTypes != ''">
+                and a.guwen_chat_types = #{params.guwenChatTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断顾问的id不为空 -->
+            <if test=" params.guwenIdNotNull != '' and params.guwenIdNotNull != null and params.guwenIdNotNull != 'null' ">
+                and a.guwen_id IS NOT NULL
+            </if>
+            <if test=" params.guwenName != '' and params.guwenName != null and params.guwenName != 'null' ">
+                and guwen.guwen_name like CONCAT('%',#{params.guwenName},'%')
+            </if>
+            <if test=" params.guwenPhone != '' and params.guwenPhone != null and params.guwenPhone != 'null' ">
+                and guwen.guwen_phone like CONCAT('%',#{params.guwenPhone},'%')
+            </if>
+            <if test=" params.guwenIdNumber != '' and params.guwenIdNumber != null and params.guwenIdNumber != 'null' ">
+                and guwen.guwen_id_number like CONCAT('%',#{params.guwenIdNumber},'%')
+            </if>
+            <if test=" params.guwenShanchang != '' and params.guwenShanchang != null and params.guwenShanchang != 'null' ">
+                and guwen.guwen_shanchang like CONCAT('%',#{params.guwenShanchang},'%')
+            </if>
+            <if test=" params.guwenEmail != '' and params.guwenEmail != null and params.guwenEmail != 'null' ">
+                and guwen.guwen_email like CONCAT('%',#{params.guwenEmail},'%')
+            </if>
+            <if test=" params.guwenContent != '' and params.guwenContent != null and params.guwenContent != 'null' ">
+                and guwen.guwen_content like CONCAT('%',#{params.guwenContent},'%')
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

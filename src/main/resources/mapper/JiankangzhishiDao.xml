@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.JiankangzhishiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.guwen_id as guwenId
+        ,a.jiankangzhishi_name as jiankangzhishiName
+        ,a.jiankangzhishi_uuid_number as jiankangzhishiUuidNumber
+        ,a.jiankangzhishi_photo as jiankangzhishiPhoto
+        ,a.jiankangzhishi_file as jiankangzhishiFile
+        ,a.jiankangzhishi_video as jiankangzhishiVideo
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.jiankangzhishi_types as jiankangzhishiTypes
+        ,a.jiankangzhishi_clicknum as jiankangzhishiClicknum
+        ,a.jiankangzhishi_content as jiankangzhishiContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.jiankangzhishi_delete as jiankangzhishiDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.JiankangzhishiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,guwen.guwen_name as guwenName
+        ,guwen.guwen_phone as guwenPhone
+        ,guwen.guwen_id_number as guwenIdNumber
+        ,guwen.guwen_photo as guwenPhoto
+        ,guwen.guwen_shanchang as guwenShanchang
+        ,guwen.guwen_email as guwenEmail
+        ,guwen.guwen_content as guwenContent
+
+        FROM jiankangzhishi  a
+        left JOIN guwen guwen ON a.guwen_id = guwen.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.guwenId != null and params.guwenId != ''">
+                and (
+                    a.guwen_id = #{params.guwenId}
+                )
+            </if>
+            <if test=" params.jiankangzhishiName != '' and params.jiankangzhishiName != null and params.jiankangzhishiName != 'null' ">
+                and a.jiankangzhishi_name like CONCAT('%',#{params.jiankangzhishiName},'%')
+            </if>
+            <if test=" params.jiankangzhishiUuidNumber != '' and params.jiankangzhishiUuidNumber != null and params.jiankangzhishiUuidNumber != 'null' ">
+                and a.jiankangzhishi_uuid_number like CONCAT('%',#{params.jiankangzhishiUuidNumber},'%')
+            </if>
+            <if test=" params.jiankangzhishiVideo != '' and params.jiankangzhishiVideo != null and params.jiankangzhishiVideo != 'null' ">
+                and a.jiankangzhishi_video like CONCAT('%',#{params.jiankangzhishiVideo},'%')
+            </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.jiankangzhishiTypes != null and params.jiankangzhishiTypes != ''">
+                and a.jiankangzhishi_types = #{params.jiankangzhishiTypes}
+            </if>
+            <if test="params.jiankangzhishiClicknumStart != null and params.jiankangzhishiClicknumStart != ''">
+                <![CDATA[  and a.jiankangzhishi_clicknum >= #{params.jiankangzhishiClicknumStart}   ]]>
+            </if>
+            <if test="params.jiankangzhishiClicknumEnd != null and params.jiankangzhishiClicknumEnd != ''">
+                <![CDATA[  and a.jiankangzhishi_clicknum <= #{params.jiankangzhishiClicknumEnd}   ]]>
+            </if>
+             <if test="params.jiankangzhishiClicknum != null and params.jiankangzhishiClicknum != ''">
+                and a.jiankangzhishi_clicknum = #{params.jiankangzhishiClicknum}
+             </if>
+            <if test=" params.jiankangzhishiContent != '' and params.jiankangzhishiContent != null and params.jiankangzhishiContent != 'null' ">
+                and a.jiankangzhishi_content like CONCAT('%',#{params.jiankangzhishiContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.jiankangzhishiDeleteStart != null and params.jiankangzhishiDeleteStart != ''">
+                <![CDATA[  and a.jiankangzhishi_delete >= #{params.jiankangzhishiDeleteStart}   ]]>
+            </if>
+            <if test="params.jiankangzhishiDeleteEnd != null and params.jiankangzhishiDeleteEnd != ''">
+                <![CDATA[  and a.jiankangzhishi_delete <= #{params.jiankangzhishiDeleteEnd}   ]]>
+            </if>
+             <if test="params.jiankangzhishiDelete != null and params.jiankangzhishiDelete != ''">
+                and a.jiankangzhishi_delete = #{params.jiankangzhishiDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断顾问的id不为空 -->
+            <if test=" params.guwenIdNotNull != '' and params.guwenIdNotNull != null and params.guwenIdNotNull != 'null' ">
+                and a.guwen_id IS NOT NULL
+            </if>
+            <if test=" params.guwenName != '' and params.guwenName != null and params.guwenName != 'null' ">
+                and guwen.guwen_name like CONCAT('%',#{params.guwenName},'%')
+            </if>
+            <if test=" params.guwenPhone != '' and params.guwenPhone != null and params.guwenPhone != 'null' ">
+                and guwen.guwen_phone like CONCAT('%',#{params.guwenPhone},'%')
+            </if>
+            <if test=" params.guwenIdNumber != '' and params.guwenIdNumber != null and params.guwenIdNumber != 'null' ">
+                and guwen.guwen_id_number like CONCAT('%',#{params.guwenIdNumber},'%')
+            </if>
+            <if test=" params.guwenShanchang != '' and params.guwenShanchang != null and params.guwenShanchang != 'null' ">
+                and guwen.guwen_shanchang like CONCAT('%',#{params.guwenShanchang},'%')
+            </if>
+            <if test=" params.guwenEmail != '' and params.guwenEmail != null and params.guwenEmail != 'null' ">
+                and guwen.guwen_email like CONCAT('%',#{params.guwenEmail},'%')
+            </if>
+            <if test=" params.guwenContent != '' and params.guwenContent != null and params.guwenContent != 'null' ">
+                and guwen.guwen_content like CONCAT('%',#{params.guwenContent},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

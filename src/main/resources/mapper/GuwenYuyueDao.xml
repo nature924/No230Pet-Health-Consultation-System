@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.GuwenYuyueDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.guwen_yuyue_uuid_number as guwenYuyueUuidNumber
+        ,a.yonghu_id as yonghuId
+        ,a.guwen_id as guwenId
+        ,a.insert_time as insertTime
+        ,a.guwen_yuyue_text as guwenYuyueText
+        ,a.guwen_yuyue_time as guwenYuyueTime
+        ,a.guwen_yuyue_yesno_types as guwenYuyueYesnoTypes
+        ,a.guwen_yuyue_yesno_text as guwenYuyueYesnoText
+        ,a.guwen_yuyue_shenhe_time as guwenYuyueShenheTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.GuwenYuyueView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,guwen.guwen_name as guwenName
+        ,guwen.guwen_phone as guwenPhone
+        ,guwen.guwen_id_number as guwenIdNumber
+        ,guwen.guwen_photo as guwenPhoto
+        ,guwen.guwen_shanchang as guwenShanchang
+        ,guwen.guwen_email as guwenEmail
+        ,guwen.guwen_content as guwenContent
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+
+        FROM guwen_yuyue  a
+        left JOIN guwen guwen ON a.guwen_id = guwen.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.guwenYuyueUuidNumber != '' and params.guwenYuyueUuidNumber != null and params.guwenYuyueUuidNumber != 'null' ">
+                and a.guwen_yuyue_uuid_number like CONCAT('%',#{params.guwenYuyueUuidNumber},'%')
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.guwenId != null and params.guwenId != ''">
+                and (
+                    a.guwen_id = #{params.guwenId}
+                )
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test=" params.guwenYuyueText != '' and params.guwenYuyueText != null and params.guwenYuyueText != 'null' ">
+                and a.guwen_yuyue_text like CONCAT('%',#{params.guwenYuyueText},'%')
+            </if>
+            <if test=" params.guwenYuyueTimeStart != '' and params.guwenYuyueTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.guwen_yuyue_time) >= UNIX_TIMESTAMP(#{params.guwenYuyueTimeStart}) ]]>
+            </if>
+            <if test=" params.guwenYuyueTimeEnd != '' and params.guwenYuyueTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.guwen_yuyue_time) <= UNIX_TIMESTAMP(#{params.guwenYuyueTimeEnd}) ]]>
+            </if>
+            <if test="params.guwenYuyueYesnoTypes != null and params.guwenYuyueYesnoTypes != ''">
+                and a.guwen_yuyue_yesno_types = #{params.guwenYuyueYesnoTypes}
+            </if>
+            <if test=" params.guwenYuyueYesnoText != '' and params.guwenYuyueYesnoText != null and params.guwenYuyueYesnoText != 'null' ">
+                and a.guwen_yuyue_yesno_text like CONCAT('%',#{params.guwenYuyueYesnoText},'%')
+            </if>
+            <if test=" params.guwenYuyueShenheTimeStart != '' and params.guwenYuyueShenheTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.guwen_yuyue_shenhe_time) >= UNIX_TIMESTAMP(#{params.guwenYuyueShenheTimeStart}) ]]>
+            </if>
+            <if test=" params.guwenYuyueShenheTimeEnd != '' and params.guwenYuyueShenheTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.guwen_yuyue_shenhe_time) <= UNIX_TIMESTAMP(#{params.guwenYuyueShenheTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断顾问的id不为空 -->
+            <if test=" params.guwenIdNotNull != '' and params.guwenIdNotNull != null and params.guwenIdNotNull != 'null' ">
+                and a.guwen_id IS NOT NULL
+            </if>
+            <if test=" params.guwenName != '' and params.guwenName != null and params.guwenName != 'null' ">
+                and guwen.guwen_name like CONCAT('%',#{params.guwenName},'%')
+            </if>
+            <if test=" params.guwenPhone != '' and params.guwenPhone != null and params.guwenPhone != 'null' ">
+                and guwen.guwen_phone like CONCAT('%',#{params.guwenPhone},'%')
+            </if>
+            <if test=" params.guwenIdNumber != '' and params.guwenIdNumber != null and params.guwenIdNumber != 'null' ">
+                and guwen.guwen_id_number like CONCAT('%',#{params.guwenIdNumber},'%')
+            </if>
+            <if test=" params.guwenShanchang != '' and params.guwenShanchang != null and params.guwenShanchang != 'null' ">
+                and guwen.guwen_shanchang like CONCAT('%',#{params.guwenShanchang},'%')
+            </if>
+            <if test=" params.guwenEmail != '' and params.guwenEmail != null and params.guwenEmail != 'null' ">
+                and guwen.guwen_email like CONCAT('%',#{params.guwenEmail},'%')
+            </if>
+            <if test=" params.guwenContent != '' and params.guwenContent != null and params.guwenContent != 'null' ">
+                and guwen.guwen_content like CONCAT('%',#{params.guwenContent},'%')
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
